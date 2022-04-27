@@ -93,10 +93,10 @@ export default function useSlider (props, context, dependencies)
   }
 
   // no export
-  const updateValue = (val) => {
+  const updateValue = (val, idx) => {
     context.emit('input', val)
-    context.emit('update:modelValue', val)
-    context.emit('update', val)
+    context.emit('update:modelValue', val, idx)
+    context.emit('update', val, idx)
   }
 
   const init = () => {
@@ -106,18 +106,19 @@ export default function useSlider (props, context, dependencies)
       tooltipsMerge(slider.value, merge.value, ' - ')
     }
 
-    slider$.value.on('set', (val) => {
+    slider$.value.on('set', (val, idx) => {
       const sliderValue = getSliderValue()
 
-      context.emit('change', sliderValue)
+      context.emit('change', sliderValue, idx)
+      context.emit('set', sliderValue, idx)
 
       /* istanbul ignore else */
       if (lazy.value) {
-        updateValue(sliderValue)
+        updateValue(sliderValue, idx)
       }
     })
 
-    slider$.value.on('update', (val) => {
+    slider$.value.on('update', (val, idx) => {
       if (!inited.value) {
         return
       }
@@ -125,25 +126,35 @@ export default function useSlider (props, context, dependencies)
       const sliderValue = getSliderValue()
 
       if ((isRange.value && arraysEqual(value.value, sliderValue)) || (!isRange.value && value.value == sliderValue)) {
-        context.emit('update', sliderValue)
+        context.emit('update', sliderValue, idx)
         // Required because set event is not
         // triggered even though it should be
         return
       }
 
       if (!lazy.value) {
-        updateValue(sliderValue)
+        updateValue(sliderValue, idx)
       }
     })
 
-    slider$.value.on('start', (val) => {
+    slider$.value.on('start', (val, idx) => {
       const sliderValue = getSliderValue()
-      context.emit('start', sliderValue)
+      context.emit('start', sliderValue, idx)
     })
 
-    slider$.value.on('end', (val) => {
+    slider$.value.on('end', (val, idx) => {
       const sliderValue = getSliderValue()
-      context.emit('end', sliderValue)
+      context.emit('end', sliderValue, idx)
+    })
+
+    slider$.value.on('slide', (val, idx) => {
+      const sliderValue = getSliderValue()
+      context.emit('slide', sliderValue, idx)
+    })
+
+    slider$.value.on('drag', (val, idx) => {
+      const sliderValue = getSliderValue()
+      context.emit('drag', sliderValue, idx)
     })
 
     slider.value.querySelectorAll('[data-handle]').forEach((handle) => {

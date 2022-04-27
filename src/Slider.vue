@@ -27,7 +27,7 @@
   export default {
     name: 'Slider',
     emits: [
-      'input', 'update:modelValue', 'update', 'change', 'start', 'end',
+      'input', 'update:modelValue', 'update', 'change', 'start', 'end', 'slide', 'drag', 'set'
     ],
     props: {
       ...valueProps,
